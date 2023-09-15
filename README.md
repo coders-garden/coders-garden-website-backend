@@ -42,6 +42,7 @@ This route returns a JSON array of objects containing details of GitHub communit
 - `followers`: Number of followers
 - `following`: Number of people they follow
 - `repositories`: Number of repositories
+- `bio`: Bio
 
 **Example Response:**
 ```json
@@ -54,7 +55,8 @@ This route returns a JSON array of objects containing details of GitHub communit
             "profile_url": "https://github.com/johndoe123/profile.jpg",
             "followers": 1000,
             "following": 500,
-            "repositories": 50
+            "repositories": 50,
+            "bio": "I'm a software engineer."
             // ... Other details
         },
         // ... More member objects

@@ -15,6 +15,7 @@ interface Member {
 	followers: null | string;
 	following: null | string;
 	repositories: null | string;
+	bio: null | string;
 }
 
 const getUserProfile = async (login: string) => {
@@ -43,6 +44,8 @@ const getUserInfo = async (html: string) => {
 		".Layout-main > div > nav > a > .Counter"
 	);
 
+	const bio: HTMLDivElement | null = document.querySelector("div[data-bio-text]");
+
 	if (!followersAndFollowing)
 		console.log("Followers and Following not found");
 
@@ -59,6 +62,7 @@ const getUserInfo = async (html: string) => {
 			? followersAndFollowing[1].innerText
 			: "0",
 		repositories: repositories.title,
+		bio: bio.innerText ?? "",
 	};
 };
 
@@ -68,12 +72,13 @@ export async function PATCH(req: Request, res: Response) {
 
 		for (let i = 0; i < membersList.length; i++) {
 			const html = await getUserProfile(membersList[i].username);
-			const { profile_url, followers, following, repositories } =
+			const { profile_url, followers, following, repositories, bio } =
 				await getUserInfo(html);
 			membersListArray[i].profile_url = profile_url;
 			membersListArray[i].followers = followers ?? "0";
 			membersListArray[i].following = following ?? "0";
 			membersListArray[i].repositories = repositories ?? "0";
+			membersListArray[i].bio = bio ?? "";
 
 			console.log(membersListArray[i].name);
 		}
