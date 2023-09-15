@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { Request, Response } from "express";
+import axios, { AxiosResponse } from "axios";
 import { parseHTML } from "linkedom";
-import membersList from "./members-list.json";
+import membersList from "../data/members-list.json";
 
 interface Member {
 	login: string;
@@ -14,13 +15,15 @@ interface Member {
 }
 
 const getUserProfile = async (login: string) => {
-	const response = await fetch(`https://github.com/${login}`);
+	const response: AxiosResponse = await axios.get(
+		`https://github.com/${login}`
+	);
 
 	if (response.status !== 200) {
 		throw new Error("User not found");
 	}
 
-	return await response.text();
+	return await response.data.text();
 };
 
 const getPhotoSrc = async (html: string) => {
@@ -28,12 +31,14 @@ const getPhotoSrc = async (html: string) => {
 	const photoSrc: HTMLAnchorElement | null = document.querySelector(
 		"div.position-relative.d-inline-block.col-2.col-md-12.mr-3.mr-md-0.flex-shrink-0 > a"
 	);
+
 	if (!photoSrc) throw new Error("Photo not found");
+
 	return photoSrc.href;
 };
 
-export async function PATCH() {
-	let membersListArray: Member[] = membersList;
+export async function PATCH(req: Request, res: Response) {
+	const membersListArray: Member[] = membersList;
 
 	for (let i = 0; i < membersList.length; i++) {
 		const html = await getUserProfile(membersList[i].login);
@@ -41,9 +46,11 @@ export async function PATCH() {
 		membersListArray[i].photo = photoSrc;
 	}
 
-	return NextResponse.json(membersListArray);
+	return res.json(membersListArray);
 }
 
-export async function GET() {
-	return NextResponse.json(membersList);
+export async function GET(req: Request, res: Response) {
+	return res.json(membersList);
 }
+
+export default { GET, PATCH };
