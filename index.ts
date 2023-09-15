@@ -1,12 +1,20 @@
 import express, { Express, Request, Response } from "express";
 import membersRoute from "./routes/members";
+import cors from "cors";
+
+const corsOptions = {
+	origin: "*",
+};
+
+cors(corsOptions);
 
 const app: Express = express();
 
 app.get("/", (req: Request, res: Response) => {
 	return res.status(200).send({
 		status: true,
-		message: "Hello World",
+		data: "Hello World",
+		message: "Success",
 	});
 });
 
