@@ -4,14 +4,17 @@ import { parseHTML } from "linkedom";
 import membersList from "../data/members-list.json";
 
 interface Member {
-	login: string;
+	username: string;
 	name: null | string;
 	tfa_enabled: boolean;
 	is_public: boolean;
 	role: string | null;
 	last_active: string | null;
 	saml_name_id: null | string;
-	photo: null | string;
+	profile_url: null | string;
+	followers: null | string;
+	following: null | string;
+	repositories: null | string;
 }
 
 const getUserProfile = async (login: string) => {
@@ -23,34 +26,84 @@ const getUserProfile = async (login: string) => {
 		throw new Error("User not found");
 	}
 
-	return await response.data.text();
+	return await response.data;
 };
 
-const getPhotoSrc = async (html: string) => {
+const getUserInfo = async (html: string) => {
 	const { document } = parseHTML(html);
 	const photoSrc: HTMLAnchorElement | null = document.querySelector(
-		"div.position-relative.d-inline-block.col-2.col-md-12.mr-3.mr-md-0.flex-shrink-0 > a"
+		".js-profile-editable-replace > .clearfix.d-flex.d-md-block.flex-items-center.mb-4.mb-md-0 > .position-relative.d-inline-block.col-2.col-md-12.mr-3.mr-md-0.flex-shrink-0 > a"
+	);
+	const followersAndFollowing: NodeListOf<HTMLSpanElement> | null =
+		document.querySelectorAll(
+			".js-profile-editable-area.d-flex.flex-column.d-md-block > div.flex-order-1.flex-md-order-none.mt-2.mt-md-0 > div > a > span"
+		);
+
+	const repositories: HTMLSpanElement | null = document.querySelector(
+		".Layout-main > div > nav > a > .Counter"
 	);
 
-	if (!photoSrc) throw new Error("Photo not found");
+	if (!followersAndFollowing)
+		console.log("Followers and Following not found");
 
-	return photoSrc.href;
+	if (!photoSrc) console.log("Photo not found");
+
+	if (!repositories) console.log("Repositories not found");
+
+	return {
+		profile_url: photoSrc.href,
+		followers: followersAndFollowing[0]
+			? followersAndFollowing[0].innerText
+			: "0",
+		following: followersAndFollowing[1]
+			? followersAndFollowing[1].innerText
+			: "0",
+		repositories: repositories.title,
+	};
 };
 
 export async function PATCH(req: Request, res: Response) {
-	const membersListArray: Member[] = membersList;
+	try {
+		const membersListArray: Member[] = membersList;
 
-	for (let i = 0; i < membersList.length; i++) {
-		const html = await getUserProfile(membersList[i].login);
-		const photoSrc = await getPhotoSrc(html);
-		membersListArray[i].photo = photoSrc;
+		for (let i = 0; i < membersList.length; i++) {
+			const html = await getUserProfile(membersList[i].username);
+			const { profile_url, followers, following, repositories } =
+				await getUserInfo(html);
+			membersListArray[i].profile_url = profile_url;
+			membersListArray[i].followers = followers ?? "0";
+			membersListArray[i].following = following ?? "0";
+			membersListArray[i].repositories = repositories ?? "0";
+
+			console.log(membersListArray[i].name);
+		}
+
+		return res.status(200).json({
+			status: true,
+			data: membersListArray,
+			message: "Members list updated",
+		});
+	} catch (err) {
+		return res.status(500).json({
+			status: false,
+			message: err.message,
+		});
 	}
-
-	return res.json(membersListArray);
 }
 
 export async function GET(req: Request, res: Response) {
-	return res.json(membersList);
+	try {
+		return res.status(200).json({
+			status: true,
+			data: membersList,
+			message: "Members list successfully retrieved",
+		});
+	} catch (err) {
+		return res.status(500).json({
+			status: false,
+			message: err.message,
+		});
+	}
 }
 
 export default { GET, PATCH };
