@@ -58,15 +58,15 @@ const getUserInfo = async (html: string) => {
 	if (!repositories) console.log("Repositories not found");
 
 	return {
-		profile_pic_url: photoSrc.href,
+		profile_pic_url: photoSrc?.href,
 		followers: followersAndFollowing[0]
 			? followersAndFollowing[0].innerText
 			: "0",
 		following: followersAndFollowing[1]
 			? followersAndFollowing[1].innerText
 			: "0",
-		repositories: repositories.title,
-		bio: bio.innerText ?? "",
+		repositories: repositories?.title,
+		bio: bio?.innerText ?? "",
 	};
 };
 
@@ -99,7 +99,7 @@ export async function PATCH(req: Request, res: Response) {
 	} catch (err) {
 		return res.status(500).json({
 			status: false,
-			message: err.message,
+			message: err,
 		});
 	}
 }
@@ -114,7 +114,7 @@ export async function GET(req: Request, res: Response) {
 	} catch (err) {
 		return res.status(500).json({
 			status: false,
-			message: err.message,
+			message: err,
 		});
 	}
 }

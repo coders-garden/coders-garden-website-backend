@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "../index";
+import app from "../app";
 
 describe("GET /", () => {
 	it("should return a 200 response", async () => {
@@ -35,9 +35,11 @@ describe("GET /members", () => {
 		const member = res.body.data[0];
 		expect(member).toHaveProperty("name");
 		expect(member).toHaveProperty("username");
-		expect(member).toHaveProperty("profile_url");
+		expect(member).toHaveProperty("profile_pic_url");
 		expect(member).toHaveProperty("followers");
+		expect(member).toHaveProperty("following");
 		expect(member).toHaveProperty("repositories");
 		expect(member).toHaveProperty("bio");
+		expect(member).toHaveProperty("github_link");
 	});
 });
