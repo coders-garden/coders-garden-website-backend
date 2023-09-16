@@ -38,11 +38,12 @@ This route returns a JSON array of objects containing details of GitHub communit
 
 - `name`: Name
 - `username`: GitHub username
-- `profile_url`: Profile picture URL
+- `profile_pic_url`: Profile picture URL
 - `followers`: Number of followers
 - `following`: Number of people they follow
 - `repositories`: Number of repositories
 - `bio`: Bio
+- `github_link`: GitHub profile URL
 
 **Example Response:**
 ```json
@@ -84,5 +85,10 @@ We maintain code quality by using ESLint with the Airbnb style guide. You can ch
 
 - To check for issues: `npm run lint`
 - To automatically fix fixable issues: `npm run lint:fix`
+
+## Code testing
+
+We use Jest for testing. You can run the tests with `npm test`.
+
 
 That's it! You are now ready to use our API to access community member data or explore other available routes. If you have any questions or encounter issues, feel free to reach out to us. Happy coding!
