@@ -1,21 +1,24 @@
 import { Request, Response } from "express";
 import axios, { AxiosResponse } from "axios";
 import { parseHTML } from "linkedom";
-import membersList from "../data/members-list.json";
+import membersList from "../data/members-list-old.json";
+import membersListLatest from "../data/members-list.json";
 
 interface Member {
-	username: string;
+	login: string;
+	username?: string;
 	name: null | string;
 	tfa_enabled: boolean;
 	is_public: boolean;
 	role: string | null;
 	last_active: string | null;
 	saml_name_id: null | string;
-	profile_url: null | string;
-	followers: null | string;
-	following: null | string;
-	repositories: null | string;
-	bio: null | string;
+	profile_pic_url?: null | string;
+	followers?: null | string;
+	following?: null | string;
+	repositories?: null | string;
+	bio?: null | string;
+	github_link?: string;
 }
 
 const getUserProfile = async (login: string) => {
@@ -44,7 +47,8 @@ const getUserInfo = async (html: string) => {
 		".Layout-main > div > nav > a > .Counter"
 	);
 
-	const bio: HTMLDivElement | null = document.querySelector("div[data-bio-text]");
+	const bio: HTMLDivElement | null =
+		document.querySelector("div[data-bio-text]");
 
 	if (!followersAndFollowing)
 		console.log("Followers and Following not found");
@@ -54,7 +58,7 @@ const getUserInfo = async (html: string) => {
 	if (!repositories) console.log("Repositories not found");
 
 	return {
-		profile_url: photoSrc.href,
+		profile_pic_url: photoSrc.href,
 		followers: followersAndFollowing[0]
 			? followersAndFollowing[0].innerText
 			: "0",
@@ -71,16 +75,18 @@ export async function PATCH(req: Request, res: Response) {
 		const membersListArray: Member[] = membersList;
 
 		for (let i = 0; i < membersList.length; i++) {
-			const html = await getUserProfile(membersList[i].username);
-			const { profile_url, followers, following, repositories, bio } =
+			const html = await getUserProfile(membersList[i].login);
+			const { profile_pic_url, followers, following, repositories, bio } =
 				await getUserInfo(html);
-			membersListArray[i].profile_url = profile_url;
+			membersListArray[i].username = membersListArray[i].login;
+			membersListArray[
+				i
+			].github_link = `https://github.com/${membersListArray[i].login}`;
+			membersListArray[i].profile_pic_url = profile_pic_url;
 			membersListArray[i].followers = followers ?? "0";
 			membersListArray[i].following = following ?? "0";
 			membersListArray[i].repositories = repositories ?? "0";
 			membersListArray[i].bio = bio ?? "";
-
-			console.log(membersListArray[i].name);
 		}
 
 		return res.status(200).json({
@@ -100,7 +106,7 @@ export async function GET(req: Request, res: Response) {
 	try {
 		return res.status(200).json({
 			status: true,
-			data: membersList,
+			data: membersListLatest,
 			message: "Members list successfully retrieved",
 		});
 	} catch (err) {
