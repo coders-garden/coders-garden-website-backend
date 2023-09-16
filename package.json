@@ -5,7 +5,8 @@
   "main": "server.ts",
   "scripts": {
     "test": "jest",
-    "start": "nodemon server.ts"
+    "start": "nodemon server.ts",
+    "ci": "npm install"
   },
   "repository": {
     "type": "git",
