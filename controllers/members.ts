@@ -70,24 +70,26 @@ const getUserInfo = async (html: string) => {
 	};
 };
 
+const updateSingleMember = async (member: Member) => {
+	const html = await getUserProfile(member.login);
+	const { profile_pic_url, followers, following, repositories, bio } =
+		await getUserInfo(html);
+	member.username = member.login;
+	member.github_link = `https://github.com/${member.login}`;
+	member.profile_pic_url = profile_pic_url;
+	member.followers = followers ?? "0";
+	member.following = following ?? "0";
+	member.repositories = repositories ?? "0";
+	member.bio = bio ?? "";
+};
+
 export async function PATCH(req: Request, res: Response) {
 	try {
 		const membersListArray: Member[] = membersList;
 
-		for (let i = 0; i < membersList.length; i++) {
-			const html = await getUserProfile(membersList[i].login);
-			const { profile_pic_url, followers, following, repositories, bio } =
-				await getUserInfo(html);
-			membersListArray[i].username = membersListArray[i].login;
-			membersListArray[
-				i
-			].github_link = `https://github.com/${membersListArray[i].login}`;
-			membersListArray[i].profile_pic_url = profile_pic_url;
-			membersListArray[i].followers = followers ?? "0";
-			membersListArray[i].following = following ?? "0";
-			membersListArray[i].repositories = repositories ?? "0";
-			membersListArray[i].bio = bio ?? "";
-		}
+		await Promise.all(
+			membersListArray.map(async (member) => updateSingleMember(member))
+		);
 
 		return res.status(200).json({
 			status: true,
