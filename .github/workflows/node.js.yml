@@ -21,6 +21,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       # This step runs `npm ci` to install any dependencies listed in your `package.json` file.
       - name: npm ci
-        run: npm CI
+        run: npm ci
       - name: npm test
         run: npm test
