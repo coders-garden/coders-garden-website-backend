@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { parseHTML } from "linkedom";
 import membersList from "../data/members-list-old.json";
 import membersListLatest from "../data/members-list.json";
+import ResponseHandler from "../components/response";
 
 interface Member {
 	login: string;
@@ -91,31 +92,27 @@ export async function PATCH(req: Request, res: Response) {
 			membersListArray.map(async (member) => updateSingleMember(member))
 		);
 
-		return res.status(200).json({
-			status: true,
-			data: membersListArray,
-			message: "Members list updated",
-		});
-	} catch (err) {
-		return res.status(500).json({
-			status: false,
-			message: err,
-		});
+		return ResponseHandler.success(
+			req,
+			res,
+			membersListArray,
+			"Members list updated"
+		);
+	} catch (err: any) {
+		return ResponseHandler.error(req, res, err);
 	}
 }
 
 export async function GET(req: Request, res: Response) {
 	try {
-		return res.status(200).json({
-			status: true,
-			data: membersListLatest,
-			message: "Members list successfully retrieved",
-		});
-	} catch (err) {
-		return res.status(500).json({
-			status: false,
-			message: err,
-		});
+		return ResponseHandler.success(
+			req,
+			res,
+			membersListLatest,
+			"Members list"
+		);
+	} catch (err: any) {
+		return ResponseHandler.error(req, res, err);
 	}
 }
 
