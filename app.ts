@@ -17,7 +17,7 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.get("/", (req: Request, res: Response) => {
-	return ResponseHandler.success(req, res, null, "Welcome to the API");
+	return ResponseHandler.success(req, res, "Hello World", "Success");
 });
 
 app.use("/members", membersRoute);
