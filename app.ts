@@ -3,6 +3,7 @@ import express, { Express, Request, Response } from "express";
 import membersRoute from "./routes/members";
 import cors from "cors";
 import morgan from "morgan";
+import ResponseHandler from "./components/response";
 
 const corsOptions = {
 	origin: "*",
@@ -16,11 +17,7 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.get("/", (req: Request, res: Response) => {
-	return res.status(200).send({
-		status: true,
-		data: "Hello World",
-		message: "Success",
-	});
+	return ResponseHandler.success(req, res, null, "Welcome to the API");
 });
 
 app.use("/members", membersRoute);
