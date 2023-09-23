@@ -1,3 +1,4 @@
+require('dotenv').config()
 import express, { Express, Request, Response } from "express";
 import membersRoute from "./routes/members";
 import cors from "cors";
