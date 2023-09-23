@@ -90,5 +90,13 @@ We maintain code quality by using ESLint with the Airbnb style guide. You can ch
 
 We use Jest for testing. You can run the tests with `npm test`.
 
+# Tech Stack
+- TypeScript
+- Express
+- Axios
+- Super-test
+- Jest
+- Morgan
+- Nodemon
 
 That's it! You are now ready to use our API to access community member data or explore other available routes. If you have any questions or encounter issues, feel free to reach out to us. Happy coding!
