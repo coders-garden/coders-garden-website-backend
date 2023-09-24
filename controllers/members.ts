@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { parseHTML } from "linkedom";
 import membersList from "../data/members-list-old.json";
 import membersListLatest from "../data/members-list.json";
-import ResponseHandler from "../components/response";
+import ResponseHandler from "../components/responseHandler";
 
 interface Member {
 	login: string;
@@ -85,35 +85,27 @@ const updateSingleMember = async (member: Member) => {
 };
 
 export async function PATCH(req: Request, res: Response) {
-	try {
-		const membersListArray: Member[] = membersList;
+	const membersListArray: Member[] = membersList;
 
-		await Promise.all(
-			membersListArray.map(async (member) => updateSingleMember(member))
-		);
+	await Promise.all(
+		membersListArray.map(async (member) => updateSingleMember(member))
+	);
 
-		return ResponseHandler.success(
-			req,
-			res,
-			membersListArray,
-			"Members list updated"
-		);
-	} catch (err: any) {
-		return ResponseHandler.error(req, res, err);
-	}
+	return ResponseHandler.success({
+		req,
+		res,
+		data: membersListArray,
+		message: "Members list updated",
+	});
 }
 
 export async function GET(req: Request, res: Response) {
-	try {
-		return ResponseHandler.success(
-			req,
-			res,
-			membersListLatest,
-			"Members list"
-		);
-	} catch (err: any) {
-		return ResponseHandler.error(req, res, err);
-	}
+	return ResponseHandler.success({
+		req,
+		res,
+		data: membersListLatest,
+		message: "Members list",
+	});
 }
 
 export default { GET, PATCH };
