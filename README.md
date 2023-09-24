@@ -96,7 +96,8 @@ This route returns a JSON object containing details of a specific GitHub communi
         "followers": "11",
         "following": "13",
         "repositories": "48",
-        "bio": "Interested in Web Development and Coding! "
+        "bio": "Interested in Web Development and Coding! ",
+        // ... Other details
     },
     "message": "Member found"
 }
