@@ -82,19 +82,21 @@ const updateSingleMember = async (member: Member) => {
 	member.following = following ?? "0";
 	member.repositories = repositories ?? "0";
 	member.bio = bio ?? "";
+
+	return member;
 };
 
 export async function PATCH(req: Request, res: Response) {
-	const membersListArray: Member[] = membersList;
-
-	await Promise.all(
-		membersListArray.map(async (member) => updateSingleMember(member))
+	const updateMembersListArray = await Promise.all(
+		membersList.map((member) => updateSingleMember(member))
 	);
+
+	console.log('updateMembersListArray', updateMembersListArray);
 
 	return ResponseHandler.success({
 		req,
 		res,
-		data: membersListArray,
+		data: updateMembersListArray,
 		message: "Members list updated",
 	});
 }
