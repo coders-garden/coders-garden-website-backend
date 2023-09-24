@@ -1,9 +1,12 @@
 require("dotenv").config();
+
 import express, { Express, Request, Response } from "express";
-import membersRoute from "./routes/members";
 import cors from "cors";
 import morgan from "morgan";
 import ResponseHandler from "./components/responseHandler";
+
+import membersRoute from "./routes/members";
+import memberRoute from "./routes/member";
 
 const corsOptions = {
 	origin: "*",
@@ -25,6 +28,7 @@ app.get("/", (req: Request, res: Response) => {
 	});
 });
 
+app.use("/member", memberRoute);
 app.use("/members", membersRoute);
 
 export default app;
