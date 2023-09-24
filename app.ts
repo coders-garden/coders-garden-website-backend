@@ -1,9 +1,12 @@
-require('dotenv').config()
+import "dotenv/config";
+
 import express, { Express, Request, Response } from "express";
-import membersRoute from "./routes/members";
 import cors from "cors";
 import morgan from "morgan";
-import ResponseHandler from "./components/response";
+import ResponseHandler from "./components/responseHandler";
+
+import membersRoute from "./routes/members";
+import memberRoute from "./routes/member";
 
 const corsOptions = {
 	origin: "*",
@@ -17,9 +20,15 @@ app.use(cors());
 app.use(morgan("dev"));
 
 app.get("/", (req: Request, res: Response) => {
-	return ResponseHandler.success(req, res, "Hello World", "Success");
+	return ResponseHandler.success({
+		req,
+		res,
+		data: "Hello World",
+		message: "Success",
+	});
 });
 
+app.use("/member", memberRoute);
 app.use("/members", membersRoute);
 
 export default app;
