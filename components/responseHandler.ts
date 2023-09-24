@@ -4,7 +4,7 @@ class ResponseHandler {
 	static success(options: {
 		req: Request;
 		res: Response;
-		data: string | object | null;
+		data: string | object | object[] | null;
 		message: string;
 	}) {
 		return options.res.status(200).json({
