@@ -6,7 +6,7 @@ function auth(req: Request, res: Response, next: NextFunction) {
 		const token = req.header("Authorization");
 		if (!token) throw Error("No token, authorization denied");
 
-		const [user, password] = token?.split(" ");
+		const [user, password] = token.split(" ");
 		if (!user || !password) throw Error("No token, authorization denied");
 		if (
 			user !== process.env.USERNAME?.toLowerCase() ||
@@ -15,8 +15,8 @@ function auth(req: Request, res: Response, next: NextFunction) {
 			throw Error("Invalid credentials");
 
 		next();
-	} catch (err: any) {
-		ResponseHandler.error({
+	} catch (err: any) { // eslint-disable-line
+		return ResponseHandler.error({
 			req,
 			res,
 			message: err.message,
