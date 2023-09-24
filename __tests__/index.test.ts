@@ -43,3 +43,28 @@ describe("GET /members", () => {
 		expect(member).toHaveProperty("github_link");
 	});
 });
+
+describe("GET /member/PRATHAM1ST", () => {
+	it("should return a 200 response", async () => {
+		const res = await request(app).get("/member/PRATHAM1ST");
+		expect(res.status).toBe(200);
+	});
+
+	it("should return an object", async () => {
+		const res = await request(app).get("/member/PRATHAM1ST");
+		expect(typeof res.body.data).toBe("object");
+	});
+
+	it("should return an object with the correct properties", async () => {
+		const res = await request(app).get("/member/PRATHAM1ST");
+		const member = res.body.data;
+		expect(member).toHaveProperty("name");
+		expect(member).toHaveProperty("username");
+		expect(member).toHaveProperty("profile_pic_url");
+		expect(member).toHaveProperty("followers");
+		expect(member).toHaveProperty("following");
+		expect(member).toHaveProperty("repositories");
+		expect(member).toHaveProperty("bio");
+		expect(member).toHaveProperty("github_link");
+	});
+});
