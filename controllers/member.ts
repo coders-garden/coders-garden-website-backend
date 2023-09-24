@@ -70,10 +70,9 @@ const getUserInfo = async (html: string) => {
 	};
 };
 
-const updateSingleMember = async (member: Member) => {
+export const updateSingleMember = async (member: Member) => {
 	const html = await getUserProfile(member.login);
-	const { profile_pic_url, followers, following, repositories, bio } =
-		await getUserInfo(html);
+	const { profile_pic_url, followers, following, repositories, bio } = await getUserInfo(html);
 	member.username = member.login;
 	member.github_link = `https://github.com/${member.login}`;
 	member.profile_pic_url = profile_pic_url;
@@ -82,7 +81,7 @@ const updateSingleMember = async (member: Member) => {
 	member.repositories = repositories ?? "0";
 	member.bio = bio ?? "";
 
-    return member; 
+	return member;
 };
 
 export async function PATCH(req: Request, res: Response) {
@@ -94,7 +93,7 @@ export async function PATCH(req: Request, res: Response) {
 	const updatedMember = await updateSingleMember(member);
 	if (!updatedMember) throw new Error("Member not found");
 
-    console.log('updatedMember', updatedMember);
+	console.log("updatedMember", updatedMember);
 
 	return ResponseHandler.success({
 		req,
