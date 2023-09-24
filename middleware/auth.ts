@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import ResponseHandler from "../components/responseHandler";
 
 function auth(req: Request, res: Response, next: NextFunction) {
 	try {
@@ -11,13 +12,14 @@ function auth(req: Request, res: Response, next: NextFunction) {
 			user !== process.env.USERNAME?.toLowerCase() ||
 			password !== process.env.PASSWORD?.toLowerCase()
 		)
-			throw Error("Invalid token, authorization denied");
+			throw Error("Invalid credentials");
 
 		next();
-	} catch (err) {
-		return res.status(500).json({
-			status: false,
-			message: err,
+	} catch (err: any) {
+		ResponseHandler.error({
+			req,
+			res,
+			message: err.message,
 		});
 	}
 }
