@@ -54,15 +54,52 @@ This route returns a JSON array of objects containing details of GitHub communit
             "name": "John Doe",
             "username": "johndoe123",
             "profile_url": "https://github.com/johndoe123/profile.jpg",
-            "followers": 1000,
-            "following": 500,
-            "repositories": 50,
+            "followers": "1000",
+            "following": "500",
+            "repositories": "50",
             "bio": "I'm a software engineer."
             // ... Other details
         },
         // ... More member objects
     ],
     "message": "Success"
+}
+```
+
+## Route 3: /members/:username
+
+This route returns a JSON object containing details of a specific GitHub community member. The details provided include:
+
+- `name`: Name
+- `username`: GitHub username
+- `profile_pic_url`: Profile picture URL
+- `followers`: Number of followers
+- `following`: Number of people they follow
+- `repositories`: Number of repositories
+- `bio`: Bio
+- `github_link`: GitHub profile URL
+
+**Example Response:**
+
+```http
+    GET /members/PRATHAM1ST
+```
+
+```json
+{
+    "status": true,
+    "data": {
+        "name": "Pratham",
+        "username": "PRATHAM1ST",
+        "github_link": "https://github.com/PRATHAM1ST",
+        "profile_pic_url": "https://avatars.githubusercontent.com/u/52632050?v=4",
+        "followers": "11",
+        "following": "13",
+        "repositories": "48",
+        "bio": "Interested in Web Development and Coding! ",
+        // ... Other details
+    },
+    "message": "Member found"
 }
 ```
 
@@ -98,5 +135,7 @@ We use Jest for testing. You can run the tests with `npm test`.
 - Jest
 - Morgan
 - Nodemon
+- ESLint
+- Dotenv
 
 That's it! You are now ready to use our API to access community member data or explore other available routes. If you have any questions or encounter issues, feel free to reach out to us. Happy coding!
