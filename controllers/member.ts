@@ -58,6 +58,7 @@ const getUserInfo = async (html: string) => {
 	if (!repositories) console.log("Repositories not found");
 
 	return {
+		/* eslint-disable camelcase */
 		profile_pic_url: photoSrc?.href,
 		followers: followersAndFollowing[0]
 			? followersAndFollowing[0].innerText
