@@ -6,13 +6,13 @@ import { parseHTML } from "linkedom";
 
 interface Member {
 	login: string;
-	username?: string;
 	name: null | string;
 	tfa_enabled: boolean;
 	is_public: boolean;
 	role: string | null;
 	last_active: string | null;
 	saml_name_id: null | string;
+	username?: string;
 	profile_pic_url?: null | string;
 	followers?: null | string;
 	following?: null | string;
@@ -21,7 +21,7 @@ interface Member {
 	github_link?: string;
 }
 
-const getUserProfile = async (login: string) => {
+const getUserProfileFromGithub = async (login: string) => {
 	const response: AxiosResponse = await axios.get(
 		`https://github.com/${login}`
 	);
@@ -33,22 +33,110 @@ const getUserProfile = async (login: string) => {
 	return await response.data;
 };
 
+function getSingleDataUsingAnchorSelector(options: {
+	html: Document;
+	selector: string;
+	error: string;
+	attribute: keyof HTMLAnchorElement;
+	defaultValue: string;
+}): string {
+	const element: HTMLAnchorElement | null = options.html.querySelector(
+		options.selector
+	);
+	if (!element) return "";
+
+	return String(element[options.attribute] ?? options.defaultValue ?? "");
+}
+
+function getSingleDataUsingSpanSelector(options: {
+	html: Document;
+	selector: string;
+	error: string;
+	attribute: keyof HTMLSpanElement;
+	defaultValue: string;
+}): string {
+	const element: HTMLSpanElement | null = options.html.querySelector(
+		options.selector
+	);
+	if (!element) return "";
+
+	return String(element[options.attribute] ?? options.defaultValue ?? "");
+}
+
+function getSingleDataUsingDivSelector(options: {
+	html: Document;
+	selector: string;
+	error: string;
+	attribute: keyof HTMLDivElement;
+	defaultValue: string;
+}): string {
+	const element: HTMLDivElement | null = options.html.querySelector(
+		options.selector
+	);
+	if (!element) return "";
+
+	return String(element[options.attribute] ?? options.defaultValue ?? "");
+}
+
+function getArrayOfDataUsingSelector(options: {
+	html: Document;
+	selector: string;
+	error: string;
+	attribute: keyof HTMLSpanElement;
+	defaultValue: string;
+}): string[] {
+	const elements: NodeListOf<HTMLSpanElement> | null =
+		options.html.querySelectorAll(options.selector);
+	if (!elements) return [];
+
+	const arrayOfElements: string[] = [];
+
+	elements.forEach((element) =>
+		arrayOfElements.push(
+			(element[options.attribute] as string) ?? options.defaultValue
+		)
+	);
+
+	if (!arrayOfElements) return [];
+
+	return arrayOfElements as string[];
+}
+
 const getUserInfo = async (html: string) => {
 	const { document } = parseHTML(html);
-	const photoSrc: HTMLAnchorElement | null = document.querySelector(
-		".js-profile-editable-replace > .clearfix.d-flex.d-md-block.flex-items-center.mb-4.mb-md-0 > .position-relative.d-inline-block.col-2.col-md-12.mr-3.mr-md-0.flex-shrink-0 > a"
-	);
-	const followersAndFollowing: NodeListOf<HTMLSpanElement> | null =
-		document.querySelectorAll(
-			".js-profile-editable-area.d-flex.flex-column.d-md-block > div.flex-order-1.flex-md-order-none.mt-2.mt-md-0 > div > a > span"
-		);
+	const photoSrc = getSingleDataUsingAnchorSelector({
+		html: document,
+		selector:
+			".js-profile-editable-replace > .clearfix.d-flex.d-md-block.flex-items-center.mb-4.mb-md-0 > .position-relative.d-inline-block.col-2.col-md-12.mr-3.mr-md-0.flex-shrink-0 > a",
+		attribute: "href",
+		error: "Photo not found",
+		defaultValue: "",
+	});
 
-	const repositories: HTMLSpanElement | null = document.querySelector(
-		".Layout-main > div > nav > a > .Counter"
-	);
+	const followersAndFollowing = getArrayOfDataUsingSelector({
+		html: document,
+		selector:
+			".js-profile-editable-area.d-flex.flex-column.d-md-block > div.flex-order-1.flex-md-order-none.mt-2.mt-md-0 > div > a > span",
+		attribute: "innerText",
+		error: "Followers and Following not found",
+		defaultValue: "0",
+	});
 
-	const bio: HTMLDivElement | null =
-		document.querySelector("div[data-bio-text]");
+	const repositories = getSingleDataUsingSpanSelector({
+		html: document,
+		selector: ".Layout-main > div > nav > a > .Counter",
+		attribute: "title",
+		error: "Repositories not found",
+		defaultValue: "0",
+	});
+
+	const bio = getSingleDataUsingDivSelector({
+		html: document,
+		selector: "div[data-bio-text]",
+		attribute: "innerText",
+		error: "Bio not found",
+		defaultValue: "",
+	});
 
 	if (!followersAndFollowing)
 		console.log("Followers and Following not found");
@@ -58,21 +146,19 @@ const getUserInfo = async (html: string) => {
 	if (!repositories) console.log("Repositories not found");
 
 	return {
-		profile_pic_url: photoSrc?.href,
-		followers: followersAndFollowing[0]
-			? followersAndFollowing[0].innerText
-			: "0",
-		following: followersAndFollowing[1]
-			? followersAndFollowing[1].innerText
-			: "0",
-		repositories: repositories?.title,
-		bio: bio?.innerText ?? "",
+		/* eslint-disable camelcase */
+		profile_pic_url: photoSrc,
+		followers: followersAndFollowing[0],
+		following: followersAndFollowing[1],
+		repositories: repositories,
+		bio: bio,
 	};
 };
 
 export const updateSingleMember = async (member: Member) => {
-	const html = await getUserProfile(member.login);
-	const { profile_pic_url, followers, following, repositories, bio } = await getUserInfo(html);
+	const html = await getUserProfileFromGithub(member.login);
+	const { profile_pic_url, followers, following, repositories, bio } =
+		await getUserInfo(html);
 	member.username = member.login;
 	member.github_link = `https://github.com/${member.login}`;
 	member.profile_pic_url = profile_pic_url;
@@ -87,13 +173,13 @@ export const updateSingleMember = async (member: Member) => {
 export async function PATCH(req: Request, res: Response) {
 	const getGithubUserName = req.params.username;
 
-	const member = membersListLatest.find((member) => member.login === getGithubUserName);
+	const member = membersListLatest.find(
+		(member) => member.login === getGithubUserName
+	);
 	if (!member) throw new Error("Member not found");
 
 	const updatedMember = await updateSingleMember(member);
 	if (!updatedMember) throw new Error("Member not found");
-
-	console.log("updatedMember", updatedMember);
 
 	return ResponseHandler.success({
 		req,
