@@ -1,22 +1,6 @@
 import { buildSchema } from "graphql";
 import membersListLatest from "../data/members-list.json";
-
-interface Member {
-	login: string;
-	name: string | null;
-	tfa_enabled: boolean;
-	is_public: boolean;
-	role: string | null;
-	last_active: string | null;
-	saml_name_id: string | null;
-	username?: string;
-	profile_pic_url?: string | null;
-	followers?: string | null;
-	following?: string | null;
-	repositories?: string | null;
-	bio?: string | null;
-	github_link?: string;
-}
+import { Member } from "./member";
 
 const schema = buildSchema(`
     type Member {

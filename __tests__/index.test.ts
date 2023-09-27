@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../app";
+import { Member } from "../controllers/member";
 
 describe("GET /", () => {
 	it("should return a 200 response", async () => {
@@ -69,8 +70,8 @@ describe("GET /member/PRATHAM1ST", () => {
 	});
 });
 
-describe("GraphQL API", () => {
-	it("should return a list of members", async () => {
+describe("POST /graphql - List of Members", () => {
+	it("should return a list of members with name and username", async () => {
 		const query = `
 			query {
 				members {
@@ -89,9 +90,17 @@ describe("GraphQL API", () => {
 		expect(errors).toBeUndefined(); // Check for GraphQL errors
 		expect(data).toHaveProperty("members");
 		expect(Array.isArray(data.members)).toBe(true);
-	});
 
-	it("should return a specific member by login", async () => {
+		// Additional checks for each member object in the list
+		data.members.forEach((member : Member) => {
+			expect(member).toHaveProperty("name");
+			expect(member).toHaveProperty("username");
+		});
+	});
+});
+
+describe("POST /graphql - Specific Member", () => {
+	it("should return a specific member by login with name and username", async () => {
 		const query = `
 			query {
 				member(login: "PRATHAM1ST") {
@@ -109,38 +118,18 @@ describe("GraphQL API", () => {
 		const { data, errors } = res.body;
 		expect(errors).toBeUndefined(); // Check for GraphQL errors
 		expect(data).toHaveProperty("member");
-		expect(data.member).toHaveProperty("name");
-		expect(data.member).toHaveProperty("username");
-	});
-});
-describe("GraphQL API", () => {
-	it("should return a list of members", async () => {
-		const query = `
-		query {
-			members {
-			name
-			username
-			}
-		}
-    `;
 
-		const res = await request(app)
-			.post("/graphql")
-			.send({ query })
-			.expect(200);
-
-		const { data, errors } = res.body;
-		expect(errors).toBeUndefined(); // Check for GraphQL errors
-		expect(data).toHaveProperty("members");
-		expect(Array.isArray(data.members)).toBe(true);
+		const member = data.member;
+		expect(member).toHaveProperty("name");
+		expect(member).toHaveProperty("username");
 	});
 
-	it("should return a specific member by login", async () => {
+	it("should return null for non-existent member", async () => {
 		const query = `
 			query {
-				member(login: "PRATHAM1ST") {
-				name
-				username
+				member(login: "NonExistentUser") {
+					name
+					username
 				}
 			}
 		`;
@@ -153,7 +142,6 @@ describe("GraphQL API", () => {
 		const { data, errors } = res.body;
 		expect(errors).toBeUndefined(); // Check for GraphQL errors
 		expect(data).toHaveProperty("member");
-		expect(data.member).toHaveProperty("name");
-		expect(data.member).toHaveProperty("username");
+		expect(data.member).toBeNull(); // Expecting null for a non-existent member
 	});
 });
