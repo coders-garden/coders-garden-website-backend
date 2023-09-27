@@ -68,3 +68,92 @@ describe("GET /member/PRATHAM1ST", () => {
 		expect(member).toHaveProperty("github_link");
 	});
 });
+
+describe("GraphQL API", () => {
+	it("should return a list of members", async () => {
+		const query = `
+			query {
+				members {
+					name
+					username
+				}
+			}
+		`;
+
+		const res = await request(app)
+			.post("/graphql")
+			.send({ query })
+			.expect(200);
+
+		const { data, errors } = res.body;
+		expect(errors).toBeUndefined(); // Check for GraphQL errors
+		expect(data).toHaveProperty("members");
+		expect(Array.isArray(data.members)).toBe(true);
+	});
+
+	it("should return a specific member by login", async () => {
+		const query = `
+			query {
+				member(login: "PRATHAM1ST") {
+					name
+					username
+				}
+			}
+		`;
+
+		const res = await request(app)
+			.post("/graphql")
+			.send({ query })
+			.expect(200);
+
+		const { data, errors } = res.body;
+		expect(errors).toBeUndefined(); // Check for GraphQL errors
+		expect(data).toHaveProperty("member");
+		expect(data.member).toHaveProperty("name");
+		expect(data.member).toHaveProperty("username");
+	});
+});
+describe("GraphQL API", () => {
+	it("should return a list of members", async () => {
+		const query = `
+		query {
+			members {
+			name
+			username
+			}
+		}
+    `;
+
+		const res = await request(app)
+			.post("/graphql")
+			.send({ query })
+			.expect(200);
+
+		const { data, errors } = res.body;
+		expect(errors).toBeUndefined(); // Check for GraphQL errors
+		expect(data).toHaveProperty("members");
+		expect(Array.isArray(data.members)).toBe(true);
+	});
+
+	it("should return a specific member by login", async () => {
+		const query = `
+			query {
+				member(login: "PRATHAM1ST") {
+				name
+				username
+				}
+			}
+		`;
+
+		const res = await request(app)
+			.post("/graphql")
+			.send({ query })
+			.expect(200);
+
+		const { data, errors } = res.body;
+		expect(errors).toBeUndefined(); // Check for GraphQL errors
+		expect(data).toHaveProperty("member");
+		expect(data.member).toHaveProperty("name");
+		expect(data.member).toHaveProperty("username");
+	});
+});
