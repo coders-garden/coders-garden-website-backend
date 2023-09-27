@@ -48,15 +48,10 @@ function extractSingleDataUsingSelector<
 	const element = options.html.querySelector<HTMLElement>(options.selector);
 	if (!element) return "";
 
-	if (options.attribute in element) {
-		return String(
-			(element as Record<T, unknown>)[options.attribute] ??
-				options.defaultValue ??
-				""
-		);
-	} else {
-		throw new Error(`Attribute ${options.attribute} not found on element`);
-	}
+	return String(
+		(element as Record<T, string>)[options.attribute] ??
+			options.defaultValue
+	);
 }
 
 function extractArrayOfDataUsingSelector<
@@ -75,15 +70,9 @@ function extractArrayOfDataUsingSelector<
 	const arrayOfElements: string[] = [];
 
 	elements.forEach((element) => {
-		if (options.attribute in element) {
-			arrayOfElements.push(
-				String(element[options.attribute]) ?? options.defaultValue
-			);
-		} else {
-			throw new Error(
-				`Attribute ${options.attribute} not found on element`
-			);
-		}
+		arrayOfElements.push(
+			String(element[options.attribute]) ?? options.defaultValue
+		);
 	});
 
 	if (!arrayOfElements) return [];
