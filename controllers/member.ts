@@ -4,7 +4,7 @@ import ResponseHandler from "../components/responseHandler";
 import axios, { AxiosResponse } from "axios";
 import { parseHTML } from "linkedom";
 
-interface Member {
+export interface Member {
 	login: string;
 	name: null | string;
 	tfa_enabled: boolean;
@@ -169,8 +169,7 @@ export async function PATCH(req: Request, res: Response) {
 
 export async function GET(req: Request, res: Response) {
 	const getGithubUserName = req.params.username;
-	const membersListArray: Member[] = membersListLatest;
-	const member = membersListArray.find(
+	const member = membersListLatest.find(
 		(member) => member.login === getGithubUserName
 	);
 
