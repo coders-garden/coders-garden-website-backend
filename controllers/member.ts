@@ -4,7 +4,7 @@ import ResponseHandler from "../components/responseHandler";
 import axios, { AxiosResponse } from "axios";
 import { parseHTML } from "linkedom";
 
-interface Member {
+export interface Member {
 	login: string;
 	name: null | string;
 	tfa_enabled: boolean;
