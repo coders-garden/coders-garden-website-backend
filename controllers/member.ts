@@ -33,69 +33,47 @@ const getUserProfileFromGithub = async (login: string) => {
 	return await response.data;
 };
 
-function getSingleDataUsingAnchorSelector(options: {
+function extractSingleDataUsingSelector<
+	T extends
+		| keyof HTMLSpanElement
+		| keyof HTMLAnchorElement
+		| keyof HTMLDivElement
+>(options: {
 	html: Document;
 	selector: string;
 	error: string;
-	attribute: keyof HTMLAnchorElement;
+	attribute: T;
 	defaultValue: string;
 }): string {
-	const element: HTMLAnchorElement | null = options.html.querySelector(
-		options.selector
-	);
+	const element = options.html.querySelector<HTMLElement>(options.selector);
 	if (!element) return "";
 
-	return String(element[options.attribute] ?? options.defaultValue ?? "");
+	return String(
+		(element as Record<T, string>)[options.attribute] ??
+			options.defaultValue
+	);
 }
 
-function getSingleDataUsingSpanSelector(options: {
+function extractArrayOfDataUsingSelector<
+	T extends keyof (HTMLSpanElement | HTMLAnchorElement | HTMLDivElement)
+>(options: {
 	html: Document;
 	selector: string;
 	error: string;
-	attribute: keyof HTMLSpanElement;
-	defaultValue: string;
-}): string {
-	const element: HTMLSpanElement | null = options.html.querySelector(
-		options.selector
-	);
-	if (!element) return "";
-
-	return String(element[options.attribute] ?? options.defaultValue ?? "");
-}
-
-function getSingleDataUsingDivSelector(options: {
-	html: Document;
-	selector: string;
-	error: string;
-	attribute: keyof HTMLDivElement;
-	defaultValue: string;
-}): string {
-	const element: HTMLDivElement | null = options.html.querySelector(
-		options.selector
-	);
-	if (!element) return "";
-
-	return String(element[options.attribute] ?? options.defaultValue ?? "");
-}
-
-function getArrayOfDataUsingSelector(options: {
-	html: Document;
-	selector: string;
-	error: string;
-	attribute: keyof HTMLSpanElement;
+	attribute: T;
 	defaultValue: string;
 }): string[] {
-	const elements: NodeListOf<HTMLSpanElement> | null =
+	const elements: NodeListOf<HTMLElement> | null =
 		options.html.querySelectorAll(options.selector);
 	if (!elements) return [];
 
 	const arrayOfElements: string[] = [];
 
-	elements.forEach((element) =>
+	elements.forEach((element) => {
 		arrayOfElements.push(
-			(element[options.attribute] as string) ?? options.defaultValue
-		)
-	);
+			String(element[options.attribute]) ?? options.defaultValue
+		);
+	});
 
 	if (!arrayOfElements) return [];
 
@@ -104,7 +82,7 @@ function getArrayOfDataUsingSelector(options: {
 
 const getUserInfo = async (html: string) => {
 	const { document } = parseHTML(html);
-	const photoSrc = getSingleDataUsingAnchorSelector({
+	const photoSrc = extractSingleDataUsingSelector({
 		html: document,
 		selector:
 			".js-profile-editable-replace > .clearfix.d-flex.d-md-block.flex-items-center.mb-4.mb-md-0 > .position-relative.d-inline-block.col-2.col-md-12.mr-3.mr-md-0.flex-shrink-0 > a",
@@ -113,7 +91,7 @@ const getUserInfo = async (html: string) => {
 		defaultValue: "",
 	});
 
-	const followersAndFollowing = getArrayOfDataUsingSelector({
+	const followersAndFollowing = extractArrayOfDataUsingSelector({
 		html: document,
 		selector:
 			".js-profile-editable-area.d-flex.flex-column.d-md-block > div.flex-order-1.flex-md-order-none.mt-2.mt-md-0 > div > a > span",
@@ -122,7 +100,7 @@ const getUserInfo = async (html: string) => {
 		defaultValue: "0",
 	});
 
-	const repositories = getSingleDataUsingSpanSelector({
+	const repositories = extractSingleDataUsingSelector({
 		html: document,
 		selector: ".Layout-main > div > nav > a > .Counter",
 		attribute: "title",
@@ -130,7 +108,7 @@ const getUserInfo = async (html: string) => {
 		defaultValue: "0",
 	});
 
-	const bio = getSingleDataUsingDivSelector({
+	const bio = extractSingleDataUsingSelector({
 		html: document,
 		selector: "div[data-bio-text]",
 		attribute: "innerText",
