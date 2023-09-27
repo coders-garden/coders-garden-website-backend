@@ -33,7 +33,7 @@ const getUserProfileFromGithub = async (login: string) => {
 	return await response.data;
 };
 
-function getSingleDataUsingSelector<
+function extractSingleDataUsingSelector<
 	T extends
 		| keyof HTMLSpanElement
 		| keyof HTMLAnchorElement
@@ -59,7 +59,7 @@ function getSingleDataUsingSelector<
 	}
 }
 
-function getArrayOfDataUsingSelector<
+function extractArrayOfDataUsingSelector<
 	T extends keyof (HTMLSpanElement | HTMLAnchorElement | HTMLDivElement)
 >(options: {
 	html: Document;
@@ -93,7 +93,7 @@ function getArrayOfDataUsingSelector<
 
 const getUserInfo = async (html: string) => {
 	const { document } = parseHTML(html);
-	const photoSrc = getSingleDataUsingSelector({
+	const photoSrc = extractSingleDataUsingSelector({
 		html: document,
 		selector:
 			".js-profile-editable-replace > .clearfix.d-flex.d-md-block.flex-items-center.mb-4.mb-md-0 > .position-relative.d-inline-block.col-2.col-md-12.mr-3.mr-md-0.flex-shrink-0 > a",
@@ -102,7 +102,7 @@ const getUserInfo = async (html: string) => {
 		defaultValue: "",
 	});
 
-	const followersAndFollowing = getArrayOfDataUsingSelector({
+	const followersAndFollowing = extractArrayOfDataUsingSelector({
 		html: document,
 		selector:
 			".js-profile-editable-area.d-flex.flex-column.d-md-block > div.flex-order-1.flex-md-order-none.mt-2.mt-md-0 > div > a > span",
@@ -111,7 +111,7 @@ const getUserInfo = async (html: string) => {
 		defaultValue: "0",
 	});
 
-	const repositories = getSingleDataUsingSelector({
+	const repositories = extractSingleDataUsingSelector({
 		html: document,
 		selector: ".Layout-main > div > nav > a > .Counter",
 		attribute: "title",
@@ -119,7 +119,7 @@ const getUserInfo = async (html: string) => {
 		defaultValue: "0",
 	});
 
-	const bio = getSingleDataUsingSelector({
+	const bio = extractSingleDataUsingSelector({
 		html: document,
 		selector: "div[data-bio-text]",
 		attribute: "innerText",
