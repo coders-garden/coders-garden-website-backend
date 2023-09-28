@@ -22,7 +22,7 @@ const schema = buildSchema(`
 
     type Query {
         members: [Member!]!
-        member(login: String!): Member
+        member(username: String!): Member
     }
 `);
 
@@ -30,8 +30,8 @@ const root = {
 	members: (): Member[] => {
 		return membersListLatest;
 	},
-	member: ({ login }: { login: string }): Member | undefined => {
-		return membersListLatest.find((member) => member.login === login);
+	member: ({ username }: { username: string }): Member | undefined => {
+		return membersListLatest.find((member) => member.login === username);
 	},
 };
 
