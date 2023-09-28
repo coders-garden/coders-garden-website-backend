@@ -128,7 +128,16 @@ This route returns a JSON object containing details of a specific GitHub communi
 
 ```json
 {
-    "query": "query { member(username: \"PRATHAM1ST\") { name github_link profile_pic_url bio } }"
+    "query": `
+        query { 
+            member(username: "PRATHAM1ST") { 
+                name 
+                github_link 
+                profile_pic_url 
+                bio 
+            } 
+        }
+    `
     // member(username: \"$github_username\")
 }
 ```
@@ -155,7 +164,16 @@ This route returns a JSON object containing details of a specific GitHub communi
 
 ```json
 {
-    "query": "query { members { name github_link profile_pic_url bio } }"
+    "query": `
+        query { 
+            members { 
+                name 
+                github_link 
+                profile_pic_url 
+                bio 
+            } 
+        }
+    `
 }
 ```
 
@@ -210,7 +228,14 @@ This route returns a JSON object containing details of a specific GitHub communi
 
 ```json
 {
-    "query": "query { members { name bioData } }"
+    "query": `
+        query { 
+            members { 
+                name 
+                bioData 
+            } 
+        }
+    `
 
     // Note that bioData is a custom field that is not available in the database. It is a custom field that is created by the resolver.
 }
