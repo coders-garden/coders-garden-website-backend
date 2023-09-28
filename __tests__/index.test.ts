@@ -103,7 +103,7 @@ describe("POST /graphql - Specific Member", () => {
 	it("should return a specific member by login with name and username", async () => {
 		const query = `
 			query {
-				member(login: "PRATHAM1ST") {
+				member(username: "PRATHAM1ST") {
 					name
 					username
 				}
@@ -127,7 +127,7 @@ describe("POST /graphql - Specific Member", () => {
 	it("should return null for non-existent member", async () => {
 		const query = `
 			query {
-				member(login: "NonExistentUser") {
+				member(username: "NonExistentUser") {
 					name
 					username
 				}
