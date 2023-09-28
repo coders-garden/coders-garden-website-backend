@@ -237,7 +237,7 @@ This route returns a JSON object containing details of a specific GitHub communi
         }
     `
 
-    // Note that bioData is a custom field that is not available in the database. It is a custom field that is created by the resolver.
+    // Note that bioData is a custom field that is not available in the database. It is just for document purposes
 }
 ```
 
