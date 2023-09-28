@@ -4,7 +4,7 @@ import { graphqlHTTP } from "express-graphql";
 
 const router = express.Router();
 
-router.use(
+router.all(
 	"/",
 	graphqlHTTP({
 		schema: controllers.schema,
