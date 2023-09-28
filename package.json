@@ -31,7 +31,6 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-graphql": "^0.12.0",
-    "graphql": "^15.8.0",
     "linkedom": "^0.15.3"
   },
   "devDependencies": {
