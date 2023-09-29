@@ -297,5 +297,6 @@ We use Jest for testing. You can run the tests with `npm test`.
 - ESLint
 - Dotenv
 - Express-Graphql
+- GraphQL
 
 That's it! You are now ready to use our API to access community member data or explore other available routes. If you have any questions or encounter issues, feel free to reach out to us. Happy coding!
